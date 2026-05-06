@@ -451,6 +451,28 @@
                 margin-right: 0.5rem;
             }
         }
+        
+        /* ================= 艺术背景底纹 ================= */
+body::before {
+    content: "过！";
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    /* 居中并旋转，增加艺术动感 */
+    transform: translate(-50%, -50%) rotate(-12deg);
+    /* 使用 50% 的屏幕宽度，确保字足够大 */
+    font-size: 50vw; 
+    font-family: var(--font-serif); /* 沿用 Claude 的衬线体 */
+    font-weight: 700;
+    /* 使用你要求的铁锈红/陶土橘 */
+    color: #D95C37; 
+    /* 极低透明度，确保不干扰正文阅读 */
+    opacity: 0.04; 
+    z-index: -1; /* 置于最底层 */
+    pointer-events: none; /* 确保文字不阻碍鼠标点击操作 */
+    user-select: none; /* 防止用户误选背景文字 */
+    white-space: nowrap;
+}
     </style>
 </head>
 <body>
