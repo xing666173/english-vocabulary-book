@@ -1,0 +1,620 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>英语单词积累本</title>
+    <style>
+        /* ================= 基础变量与重置 ================= */
+        :root {
+            --bg-color: #f5f7fa;
+            --card-bg: #ffffff;
+            --text-main: #2c3e50;
+            --text-muted: #7f8c8d;
+            --primary-color: #3498db;
+            --primary-hover: #2980b9;
+            --border-color: #e2e8f0;
+            --shadow-sm: 0 2px 4px rgba(0, 0, 0, 0.05);
+            --shadow-md: 0 4px 6px rgba(0, 0, 0, 0.07);
+            --border-radius: 8px;
+            --transition-speed: 0.2s;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            line-height: 1.6;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        /* ================= 布局组件 ================= */
+        .header {
+            background-color: var(--card-bg);
+            padding: 1rem 2rem;
+            box-shadow: var(--shadow-sm);
+            position: sticky;
+            top: 0;
+            z-index: 10;
+        }
+
+        .header h1 {
+            font-size: 1.5rem;
+            color: var(--text-main);
+            font-weight: 600;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem 1rem;
+        }
+
+        /* ================= 控制区 ================= */
+        .controls {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1rem;
+            margin-bottom: 2rem;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .search-box {
+            flex: 1;
+            min-width: 250px;
+        }
+
+        .search-box input {
+            width: 100%;
+            padding: 0.6rem 1rem;
+            border: 1px solid var(--border-color);
+            border-radius: var(--border-radius);
+            font-size: 1rem;
+            outline: none;
+            transition: border-color var(--transition-speed);
+        }
+
+        .search-box input:focus {
+            border-color: var(--primary-color);
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 0.75rem;
+            flex-wrap: wrap;
+        }
+
+        /* ================= 按钮样式 ================= */
+        .btn {
+            padding: 0.6rem 1.2rem;
+            border: 1px solid var(--border-color);
+            background-color: var(--card-bg);
+            color: var(--text-main);
+            border-radius: var(--border-radius);
+            cursor: pointer;
+            font-size: 0.95rem;
+            transition: all var(--transition-speed);
+            display: inline-block;
+        }
+
+        .btn:hover {
+            background-color: #f8fafc;
+        }
+
+        .btn-primary {
+            background-color: var(--primary-color);
+            color: white;
+            border-color: var(--primary-color);
+        }
+
+        .btn-primary:hover {
+            background-color: var(--primary-hover);
+            border-color: var(--primary-hover);
+        }
+
+        /* ================= 可访问性与辅助样式 ================= */
+        /* 使用视觉隐藏替代 display: none，保留键盘焦点与屏幕阅读器可访问性 */
+        .file-upload-input {
+            position: absolute;
+            width: 1px;
+            height: 1px;
+            padding: 0;
+            margin: -1px;
+            overflow: hidden;
+            clip: rect(0, 0, 0, 0);
+            white-space: nowrap;
+            border: 0;
+        }
+
+        /* 必填项红星标记 */
+        .required-mark {
+            color: #e74c3c;
+            margin-left: 4px;
+        }
+
+        /* ================= 单词列表区 ================= */
+        .word-list {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .word-card {
+            background-color: var(--card-bg);
+            border-radius: var(--border-radius);
+            padding: 1.5rem;
+            box-shadow: var(--shadow-sm);
+            border: 1px solid var(--border-color);
+            transition: box-shadow var(--transition-speed), transform var(--transition-speed);
+        }
+
+        .word-card:hover {
+            box-shadow: var(--shadow-md);
+            transform: translateY(-2px);
+        }
+
+        .word-card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: baseline;
+            margin-bottom: 0.5rem;
+            border-bottom: 1px solid var(--border-color);
+            padding-bottom: 0.5rem;
+        }
+
+        .word-card-word {
+            font-size: 1.4rem;
+            font-weight: bold;
+            color: var(--primary-color);
+        }
+
+        .word-card-phonetic {
+            font-size: 0.9rem;
+            color: var(--text-muted);
+            font-family: "Lucida Sans Unicode", sans-serif;
+        }
+
+        .word-card-pos {
+            display: inline-block;
+            background-color: #eef2f5;
+            padding: 0.2rem 0.5rem;
+            border-radius: 4px;
+            font-size: 0.8rem;
+            color: var(--text-muted);
+            margin-bottom: 0.5rem;
+        }
+
+        .word-card-translation {
+            font-size: 1.1rem;
+            margin-bottom: 0.5rem;
+            font-weight: 500;
+        }
+
+        .word-card-usage {
+            font-size: 0.95rem;
+            color: var(--text-muted);
+            background-color: #f8fafc;
+            padding: 0.5rem;
+            border-radius: 4px;
+            border-left: 3px solid var(--primary-color);
+        }
+
+        /* ================= 弹窗 (Modal) ================= */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.4);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 100;
+        }
+
+        .modal-overlay.active {
+            display: flex;
+        }
+
+        .modal-content {
+            background-color: var(--card-bg);
+            width: 90%;
+            max-width: 500px;
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow-md);
+            animation: modalFadeIn 0.3s ease;
+        }
+
+        @keyframes modalFadeIn {
+            from { opacity: 0; transform: translateY(-20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .modal-header {
+            padding: 1.2rem 1.5rem;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .modal-header h2 {
+            font-size: 1.2rem;
+            color: var(--text-main);
+        }
+
+        .modal-body {
+            padding: 1.5rem;
+        }
+
+        .form-group {
+            margin-bottom: 1.2rem;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 500;
+            font-size: 0.95rem;
+        }
+
+        .form-group input, 
+        .form-group textarea {
+            width: 100%;
+            padding: 0.6rem;
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            font-family: inherit;
+            outline: none;
+            transition: border-color var(--transition-speed);
+        }
+
+        .form-group input:focus, 
+        .form-group textarea:focus {
+            border-color: var(--primary-color);
+        }
+
+        .form-group textarea {
+            resize: vertical;
+            min-height: 80px;
+        }
+
+        .modal-footer {
+            padding: 1.2rem 1.5rem;
+            border-top: 1px solid var(--border-color);
+            display: flex;
+            justify-content: flex-end;
+            gap: 1rem;
+        }
+
+        /* ================= 移动端适配补丁 ================= */
+        @media (max-width: 600px) {
+            .controls {
+                flex-direction: column;
+                align-items: stretch;
+            }
+            .action-buttons {
+                justify-content: space-between;
+            }
+            .action-buttons .btn,
+            .action-buttons label {
+                flex: 1;
+                text-align: center;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <header class="header">
+        <h1>单词积累本</h1>
+    </header>
+
+    <main class="container">
+        <div class="controls">
+            <div class="search-box">
+                <input type="text" id="searchInput" aria-label="搜索单词" placeholder="搜索单词、翻译或拼写...">
+            </div>
+            <div class="action-buttons">
+                <button type="button" id="btnAddWord" class="btn btn-primary">添加单词</button>
+                <button type="button" id="btnExportData" class="btn">导出数据</button>
+                <label for="importFile" class="btn">导入数据</label>
+                <input type="file" id="importFile" class="file-upload-input" accept=".json">
+            </div>
+        </div>
+
+        <div id="wordList" class="word-list">
+        </div>
+    </main>
+
+    <div id="wordModal" class="modal-overlay" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 id="modalTitle">添加单词</h2>
+            </div>
+            <div class="modal-body">
+                <form id="wordForm">
+                    <input type="hidden" id="wordId">
+                    <div class="form-group">
+                        <label for="wordInput">单词 <span class="required-mark">*</span></label>
+                        <input type="text" id="wordInput" required placeholder="例如: Apple">
+                    </div>
+                    <div class="form-group">
+                        <label for="phoneticInput">音标</label>
+                        <input type="text" id="phoneticInput" placeholder="例如: /ˈæp.əl/">
+                    </div>
+                    <div class="form-group">
+                        <label for="posInput">词性</label>
+                        <input type="text" id="posInput" placeholder="例如: n. / adj. / v.">
+                    </div>
+                    <div class="form-group">
+                        <label for="translationInput">中文翻译</label>
+                        <input type="text" id="translationInput" placeholder="例如: 苹果">
+                    </div>
+                    <div class="form-group">
+                        <label for="usageInput">例句或用法说明</label>
+                        <textarea id="usageInput" placeholder="输入例句或短语搭配..."></textarea>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" id="btnCancelModal" class="btn">取消</button>
+                <button type="submit" form="wordForm" id="btnSaveWord" class="btn btn-primary">保存</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+    document.addEventListener('DOMContentLoaded', () => {
+        // ================= 1. DOM 节点获取 =================
+        const wordListEl = document.getElementById('wordList');
+        const btnAddWord = document.getElementById('btnAddWord');
+        const wordModal = document.getElementById('wordModal');
+        const btnCancelModal = document.getElementById('btnCancelModal');
+        const wordForm = document.getElementById('wordForm');
+        
+        // 第三步与第四步新增 DOM 获取
+        const searchInput = document.getElementById('searchInput');
+        const btnExportData = document.getElementById('btnExportData');
+        const importFile = document.getElementById('importFile');
+
+        // ================= 2. 状态管理与初始化 =================
+        let vocabulary = JSON.parse(localStorage.getItem('my_vocabulary')) || [];
+
+        // ================= 3. 核心功能函数 =================
+        
+        // 安全转义函数，防 XSS 注入
+        const escapeHTML = (str) => {
+            if (!str) return '';
+            return str.replace(/[&<>'"]/g, tag => ({
+                '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#39;', '"': '&quot;'
+            }[tag] || tag));
+        };
+
+        // 保存并持久化
+        const saveToLocal = () => {
+            localStorage.setItem('my_vocabulary', JSON.stringify(vocabulary));
+        };
+
+        // 渲染单词列表 (支持动态数据源过滤)
+        const renderList = (dataToRender = vocabulary) => {
+            wordListEl.innerHTML = '';
+
+            const sortedVocab = [...dataToRender].sort((a, b) => 
+                a.word.toLowerCase().localeCompare(b.word.toLowerCase())
+            );
+
+            sortedVocab.forEach(item => {
+                const card = document.createElement('div');
+                card.className = 'word-card';
+                
+                // 卡片头部注入“编辑”和“删除”按钮
+                let cardHTML = `
+                    <div class="word-card-header">
+                        <div>
+                            <span class="word-card-word">${escapeHTML(item.word)}</span>
+                            <span class="word-card-phonetic">${escapeHTML(item.phonetic)}</span>
+                        </div>
+                        <div style="display:flex; gap:0.5rem;">
+                            <button class="btn-edit" style="background:none; border:none; color:var(--primary-color); cursor:pointer; font-size: 0.9rem;">编辑</button>
+                            <button class="btn-delete" style="background:none; border:none; color:#e74c3c; cursor:pointer; font-size: 0.9rem;">删除</button>
+                        </div>
+                    </div>
+                `;
+                
+                if (item.partOfSpeech) cardHTML += `<div class="word-card-pos">${escapeHTML(item.partOfSpeech)}</div>`;
+                if (item.translation) cardHTML += `<div class="word-card-translation">${escapeHTML(item.translation)}</div>`;
+                if (item.usage) cardHTML += `<div class="word-card-usage">${escapeHTML(item.usage)}</div>`;
+
+                card.innerHTML = cardHTML;
+
+                // 绑定编辑与删除事件 (利用闭包保留 item.id)
+                card.querySelector('.btn-edit').addEventListener('click', () => editWord(item.id));
+                card.querySelector('.btn-delete').addEventListener('click', () => deleteWord(item.id));
+
+                wordListEl.appendChild(card);
+            });
+        };
+
+        // 弹窗控制
+        const openModal = () => {
+            document.getElementById('modalTitle').textContent = '添加单词';
+            wordModal.classList.add('active');
+        };
+        
+        const closeModal = () => {
+            wordModal.classList.remove('active');
+            wordForm.reset(); 
+            document.getElementById('wordId').value = ''; 
+        };
+
+        // ================= 4. 高级增删改查与过滤 =================
+
+        // 实时搜索过滤
+        const handleSearch = () => {
+            const keyword = searchInput.value.trim().toLowerCase();
+            if (!keyword) {
+                renderList(vocabulary); // 关键字为空，渲染全量数据
+                return;
+            }
+            // 过滤逻辑：匹配英文单词 OR 中文翻译
+            const filteredData = vocabulary.filter(item => 
+                item.word.toLowerCase().includes(keyword) || 
+                (item.translation && item.translation.includes(keyword))
+            );
+            renderList(filteredData);
+        };
+        // 监听输入事件，实现毫秒级响应
+        searchInput.addEventListener('input', handleSearch);
+
+        // 删除功能
+        const deleteWord = (id) => {
+            // 调用系统 confirm 拦截误触
+            if (window.confirm('此操作不可逆，确定要删除这个单词吗？')) {
+                vocabulary = vocabulary.filter(item => item.id !== id);
+                saveToLocal();
+                handleSearch(); // 重新走过滤链路渲染，避免在搜索状态下数据错乱
+            }
+        };
+
+        // 编辑功能 (数据回填)
+        const editWord = (id) => {
+            const item = vocabulary.find(v => v.id === id);
+            if (!item) return;
+
+            // 回填表单数据
+            document.getElementById('wordId').value = item.id;
+            document.getElementById('wordInput').value = item.word;
+            document.getElementById('phoneticInput').value = item.phonetic || '';
+            document.getElementById('posInput').value = item.partOfSpeech || '';
+            document.getElementById('translationInput').value = item.translation || '';
+            document.getElementById('usageInput').value = item.usage || '';
+
+            // 修改弹窗标题
+            document.getElementById('modalTitle').textContent = '编辑单词';
+            wordModal.classList.add('active');
+        };
+
+        // 表单提交事件 (支持“新增”与“修改”双模式)
+        wordForm.addEventListener('submit', (e) => {
+            e.preventDefault();
+
+            const editId = document.getElementById('wordId').value;
+            const newWordData = {
+                word: document.getElementById('wordInput').value.trim(),
+                phonetic: document.getElementById('phoneticInput').value.trim(),
+                partOfSpeech: document.getElementById('posInput').value.trim(),
+                translation: document.getElementById('translationInput').value.trim(),
+                usage: document.getElementById('usageInput').value.trim(),
+            };
+
+            if (editId) {
+                // 模式 A：编辑保存 -> 查找旧索引并覆盖属性
+                const index = vocabulary.findIndex(v => v.id === editId);
+                if (index > -1) {
+                    vocabulary[index] = { ...vocabulary[index], ...newWordData };
+                }
+            } else {
+                // 模式 B：全新新增 -> 创建完整对象压入数组
+                vocabulary.push({
+                    id: Date.now().toString(),
+                    timestamp: Date.now(),
+                    ...newWordData
+                });
+            }
+
+            saveToLocal();
+            handleSearch(); 
+            closeModal();
+        });
+
+        // ================= 5. 跨设备数据同步 =================
+
+        // 导出功能 (序列化为 Blob 并触发下载)
+        btnExportData.addEventListener('click', () => {
+            if (vocabulary.length === 0) {
+                alert('存储库为空，没有可导出的数据！');
+                return;
+            }
+            
+            // 格式化输出 JSON 文件
+            const dataStr = JSON.stringify(vocabulary, null, 2);
+            const blob = new Blob([dataStr], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'my_vocabulary.json';
+            
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+        });
+
+        // 导入功能 (读取 JSON 并合并去重)
+        importFile.addEventListener('change', (e) => {
+            const file = e.target.files[0];
+            if (!file) return;
+
+            const reader = new FileReader();
+            reader.onload = (event) => {
+                try {
+                    const importedData = JSON.parse(event.target.result);
+                    if (!Array.isArray(importedData)) throw new Error('非法格式：顶层非数组。');
+
+                    let mergedCount = 0;
+                    let updatedCount = 0;
+
+                    importedData.forEach(newWord => {
+                        if (!newWord.word) return;
+
+                        // 判重规则：依据 ID 或 单词拼写（忽略大小写）
+                        const existingIndex = vocabulary.findIndex(v => 
+                            v.id === newWord.id || 
+                            v.word.toLowerCase() === newWord.word.toLowerCase()
+                        );
+
+                        if (existingIndex > -1) {
+                            // 覆盖旧数据，但保留原有的基础 ID 以防结构破坏
+                            vocabulary[existingIndex] = { ...vocabulary[existingIndex], ...newWord, id: vocabulary[existingIndex].id };
+                            updatedCount++;
+                        } else {
+                            // 插入新数据
+                            if (!newWord.id) newWord.id = Date.now().toString() + Math.random().toString(36).substring(2);
+                            if (!newWord.timestamp) newWord.timestamp = Date.now();
+                            vocabulary.push(newWord);
+                            mergedCount++;
+                        }
+                    });
+
+                    saveToLocal();
+                    handleSearch();
+                    alert(`导入成功！\n- 新增单词: ${mergedCount} 个\n- 更新已有单词: ${updatedCount} 个`);
+                } catch (error) {
+                    alert('解析 JSON 失败，请检查文件是否损坏。\n系统错误：' + error.message);
+                } finally {
+                    e.target.value = ''; // 释放 input 焦点，允许重复导入同一文件
+                }
+            };
+            reader.readAsText(file);
+        });
+
+        // ================= 6. 全局事件绑定与初始化 =================
+        btnAddWord.addEventListener('click', openModal);
+        btnCancelModal.addEventListener('click', closeModal);
+        wordModal.addEventListener('click', (e) => {
+            if (e.target === wordModal) closeModal();
+        });
+
+        // 初始执行一次视图渲染
+        renderList();
+    });
+    </script>
+</body>
+</html>
