@@ -5,20 +5,31 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>英语单词积累本</title>
     <style>
-        /* ================= 基础变量与重置 (Claude 风格) ================= */
+        /* ================= 基础变量与重置 (精准 Claude 风格还原) ================= */
         :root {
-            --bg-color: #f9f8f6;
-            --card-bg: #ffffff;
-            --text-main: #2d2d2d;
-            --text-muted: #737373;
-            --primary-color: #2d2d2d;
-            --primary-hover: #1a1a1a;
-            --border-color: #e5e5e5;
-            --shadow-sm: 0 2px 4px rgba(0, 0, 0, 0.02);
-            --shadow-md: 0 4px 16px rgba(0, 0, 0, 0.04);
-            --shadow-lg: 0 12px 32px rgba(0, 0, 0, 0.08);
-            --border-radius: 12px;
+            /* 核心：Claude 标志性的暖米色画布 */
+            --bg-color: #F3F1EC;
+            /* 卡片背景：通常为纯白或极浅的暖白 */
+            --card-bg: #FFFFFF;
+            /* 字体颜色：深邃的暖黑/炭棕色，而非纯黑 */
+            --text-main: #1A1919;
+            --text-muted: #66645E;
+            /* 核心：Claude 标志性的铁锈红/陶土橘主按钮 */
+            --primary-color: #D95C37;
+            --primary-hover: #C24F2E;
+            /* 极浅的温和边框 */
+            --border-color: #E2DFD8;
+            /* 弥散的呼吸感阴影 */
+            --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.02);
+            --shadow-md: 0 8px 24px rgba(0, 0, 0, 0.04);
+            --shadow-lg: 0 16px 40px rgba(0, 0, 0, 0.08);
+            /* 显著的大圆角 */
+            --border-radius: 16px;
             --transition-speed: 0.2s;
+
+            /* 字体栈分离：衬线体负责标题/核心词汇，无衬线体负责正文/UI控件 */
+            --font-serif: "Tiina", "Tiempos Text", "Georgia", "Times New Roman", serif;
+            --font-sans: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
         }
 
         * {
@@ -28,7 +39,7 @@
         }
 
         body {
-            font-family: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            font-family: var(--font-sans);
             background-color: var(--bg-color);
             color: var(--text-main);
             line-height: 1.6;
@@ -38,26 +49,24 @@
 
         /* ================= 布局组件 ================= */
         .header {
-            background-color: var(--bg-color);
-            padding: 1.5rem 2rem;
+            background-color: transparent; /* 融入画布背景 */
+            padding: 2rem 2rem 1rem;
             box-shadow: none;
-            border-bottom: 1px solid rgba(0, 0, 0, 0.05);
-            position: sticky;
-            top: 0;
-            z-index: 10;
+            text-align: center; /* 居中以体现古典版式美感 */
         }
 
         .header h1 {
-            font-size: 1.25rem;
+            font-family: var(--font-serif);
+            font-size: 2.2rem;
             color: var(--text-main);
-            font-weight: 600;
-            letter-spacing: -0.01em;
+            font-weight: 500;
+            letter-spacing: -0.02em;
         }
 
         .container {
             max-width: 1200px;
             margin: 0 auto;
-            padding: 2.5rem 1rem;
+            padding: 1rem 1rem 4rem;
         }
 
         /* ================= 控制区 ================= */
@@ -65,36 +74,43 @@
             display: flex;
             flex-wrap: wrap;
             gap: 1rem;
-            margin-bottom: 2.5rem;
+            margin-bottom: 3rem;
             align-items: center;
-            justify-content: space-between;
+            justify-content: center; /* 居中对齐控制区，契合原图表单居中风格 */
+            background-color: var(--card-bg);
+            padding: 1.5rem;
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow-sm);
+            border: 1px solid var(--border-color);
         }
 
         .search-box {
             flex: 1;
             min-width: 250px;
+            max-width: 500px;
         }
 
         .search-box input {
             width: 100%;
-            padding: 0.75rem 1.2rem;
-            background-color: var(--card-bg);
+            padding: 0.85rem 1.2rem;
+            background-color: #FAFAFA;
             border: 1px solid var(--border-color);
             border-radius: 8px;
+            font-family: var(--font-sans);
             font-size: 0.95rem;
             color: var(--text-main);
             outline: none;
             transition: all var(--transition-speed) ease;
-            box-shadow: var(--shadow-sm);
         }
 
         .search-box input:focus {
-            border-color: #a3a3a3;
-            box-shadow: 0 0 0 3px rgba(45, 45, 45, 0.05);
+            background-color: #FFFFFF;
+            border-color: var(--text-muted);
+            box-shadow: 0 0 0 1px var(--text-muted);
         }
 
         .search-box input::placeholder {
-            color: #a3a3a3;
+            color: #A3A19A;
         }
 
         .action-buttons {
@@ -105,35 +121,35 @@
 
         /* ================= 按钮样式 ================= */
         .btn {
-            padding: 0.65rem 1.25rem;
+            padding: 0.85rem 1.25rem;
             border: 1px solid var(--border-color);
-            background-color: var(--card-bg);
+            background-color: #FFFFFF;
             color: var(--text-main);
             border-radius: 8px;
             cursor: pointer;
+            font-family: var(--font-sans);
             font-size: 0.9rem;
             font-weight: 500;
             transition: all var(--transition-speed) ease;
             display: inline-block;
-            box-shadow: var(--shadow-sm);
         }
 
         .btn:hover {
-            background-color: #f5f5f5;
+            background-color: #F8F7F4;
+            border-color: #D2D0C9;
         }
 
         .btn-primary {
             background-color: var(--primary-color);
             color: #ffffff;
             border-color: var(--primary-color);
-            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+            box-shadow: 0 2px 4px rgba(217, 92, 55, 0.2); /* 匹配陶土橘的专属阴影 */
         }
 
         .btn-primary:hover {
             background-color: var(--primary-hover);
             border-color: var(--primary-hover);
-            transform: translateY(-1px);
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+            box-shadow: 0 4px 8px rgba(217, 92, 55, 0.3);
         }
 
         /* ================= 可访问性与辅助样式 ================= */
@@ -150,28 +166,28 @@
         }
 
         .required-mark {
-            color: #c84b31;
+            color: var(--primary-color);
             margin-left: 4px;
         }
 
         /* ================= 单词列表区 ================= */
         .word-list {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
             gap: 1.5rem;
         }
 
         .word-card {
             background-color: var(--card-bg);
             border-radius: var(--border-radius);
-            padding: 1.8rem;
-            border: none;
-            box-shadow: var(--shadow-md);
+            padding: 2rem;
+            border: 1px solid var(--border-color);
+            box-shadow: var(--shadow-sm);
             transition: box-shadow var(--transition-speed), transform var(--transition-speed);
         }
 
         .word-card:hover {
-            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.06);
+            box-shadow: var(--shadow-md);
             transform: translateY(-2px);
         }
 
@@ -179,51 +195,60 @@
             display: flex;
             justify-content: space-between;
             align-items: baseline;
-            margin-bottom: 0.8rem;
-            border-bottom: 1px solid rgba(0, 0, 0, 0.04);
-            padding-bottom: 0.8rem;
+            margin-bottom: 1.2rem;
         }
 
         .word-card-word {
-            font-size: 1.5rem;
-            font-weight: 700;
+            /* 赋予单词核心的衬线体质感 */
+            font-family: var(--font-serif);
+            font-size: 1.8rem;
+            font-weight: 500;
             color: var(--text-main);
             letter-spacing: -0.02em;
         }
 
         .word-card-phonetic {
-            font-size: 0.9rem;
-            color: #a3a3a3;
-            font-family: "Lucida Sans Unicode", sans-serif;
-            margin-left: 0.5rem;
+            font-size: 0.95rem;
+            color: var(--text-muted);
+            font-family: var(--font-sans);
+            margin-left: 0.75rem;
+            font-weight: 400;
         }
 
         .word-card-pos {
             display: inline-block;
-            background-color: #f4f4f4;
+            background-color: var(--bg-color); /* 使用底色燕麦色作为小标签背景 */
             padding: 0.2rem 0.6rem;
             border-radius: 6px;
-            font-size: 0.75rem;
+            font-size: 0.8rem;
             font-weight: 500;
             color: var(--text-muted);
             margin-bottom: 0.8rem;
+            border: 1px solid var(--border-color);
         }
 
         .word-card-translation {
-            font-size: 1.05rem;
-            margin-bottom: 0.8rem;
+            font-size: 1.1rem;
+            margin-bottom: 1rem;
             font-weight: 500;
             color: var(--text-main);
         }
 
         .word-card-usage {
-            font-size: 0.9rem;
+            font-family: var(--font-serif); /* 例句也使用衬线体，增强阅读的沉浸感 */
+            font-size: 1.05rem;
             color: var(--text-muted);
-            background-color: var(--bg-color);
-            padding: 0.75rem;
-            border-radius: 6px;
-            border-left: 3px solid #d4d4d4;
-            line-height: 1.5;
+            line-height: 1.6;
+            padding-top: 1rem;
+            border-top: 1px solid var(--border-color);
+        }
+
+        /* 卡片内部操作按钮 */
+        .card-actions button {
+            font-family: var(--font-sans);
+            font-weight: 500;
+            letter-spacing: 0.02em;
+            text-transform: uppercase;
         }
 
         /* ================= 弹窗 (Modal) ================= */
@@ -233,8 +258,8 @@
             left: 0;
             width: 100%;
             height: 100%;
-            background-color: rgba(0, 0, 0, 0.2);
-            backdrop-filter: blur(2px);
+            background-color: rgba(26, 25, 25, 0.4); /* 更深的遮罩，突出内容 */
+            backdrop-filter: blur(4px);
             display: none;
             justify-content: center;
             align-items: center;
@@ -246,11 +271,12 @@
         }
 
         .modal-content {
-            background-color: var(--card-bg);
+            background-color: var(--bg-color); /* 弹窗背景使用燕麦色 */
             width: 90%;
             max-width: 480px;
             border-radius: var(--border-radius);
             box-shadow: var(--shadow-lg);
+            border: 1px solid var(--border-color);
             animation: modalFadeIn 0.25s cubic-bezier(0.16, 1, 0.3, 1);
         }
 
@@ -260,18 +286,19 @@
         }
 
         .modal-header {
-            padding: 1.5rem 1.8rem 1rem;
-            border-bottom: none;
+            padding: 2rem 2rem 1rem;
+            text-align: center;
         }
 
         .modal-header h2 {
-            font-size: 1.25rem;
+            font-family: var(--font-serif);
+            font-size: 1.5rem;
             color: var(--text-main);
-            font-weight: 600;
+            font-weight: 500;
         }
 
         .modal-body {
-            padding: 0 1.8rem 1.5rem;
+            padding: 0 2rem 1.5rem;
         }
 
         .form-group {
@@ -283,47 +310,49 @@
             margin-bottom: 0.5rem;
             font-weight: 500;
             font-size: 0.85rem;
-            color: var(--text-muted);
+            color: var(--text-main);
         }
 
         .form-group input, 
         .form-group textarea {
             width: 100%;
-            padding: 0.7rem 1rem;
+            padding: 0.8rem 1rem;
             border: 1px solid var(--border-color);
             border-radius: 8px;
-            font-family: inherit;
+            font-family: var(--font-sans);
             font-size: 0.95rem;
             color: var(--text-main);
-            background-color: #fafafa;
+            background-color: #FFFFFF;
             outline: none;
             transition: all var(--transition-speed) ease;
         }
 
         .form-group input:focus, 
         .form-group textarea:focus {
-            background-color: #ffffff;
-            border-color: #a3a3a3;
-            box-shadow: 0 0 0 3px rgba(45, 45, 45, 0.05);
+            border-color: var(--text-muted);
+            box-shadow: 0 0 0 1px var(--text-muted);
         }
 
         .form-group textarea {
             resize: vertical;
-            min-height: 90px;
+            min-height: 100px;
         }
 
         .modal-footer {
-            padding: 1rem 1.8rem 1.5rem;
-            border-top: none;
+            padding: 1rem 2rem 2rem;
             display: flex;
-            justify-content: flex-end;
-            gap: 0.8rem;
+            justify-content: stretch;
+            gap: 1rem;
+        }
+        
+        .modal-footer button {
+            flex: 1;
         }
 
         /* ================= 侧边字母表样式与布局重构 ================= */
         .layout-wrapper {
             display: flex;
-            gap: 2rem;
+            gap: 2.5rem;
             align-items: flex-start;
         }
 
@@ -333,27 +362,26 @@
         }
 
         .alphabet-sidebar {
-            width: 48px;
+            width: 54px;
             position: sticky;
-            top: 100px;
-            background-color: var(--card-bg);
-            border-radius: 100px;
-            padding: 1rem 0;
-            box-shadow: var(--shadow-sm);
+            top: 40px;
+            background-color: transparent;
+            padding: 0;
             display: flex;
             flex-direction: column;
             align-items: center;
-            gap: 4px;
+            gap: 2px;
         }
 
         .alpha-btn {
-            width: 32px;
-            height: 32px;
-            border-radius: 50%;
+            width: 36px;
+            height: 36px;
+            border-radius: 8px;
             border: none;
             background: transparent;
             color: var(--text-muted);
-            font-size: 0.8rem;
+            font-family: var(--font-sans);
+            font-size: 0.85rem;
             font-weight: 600;
             cursor: pointer;
             transition: all var(--transition-speed) ease;
@@ -363,33 +391,38 @@
         }
 
         .alpha-btn:not(.disabled):hover {
-            background-color: #f0f0f0;
+            background-color: var(--border-color);
             color: var(--text-main);
         }
 
         .alpha-btn.active {
-            background-color: var(--primary-color);
-            color: #ffffff;
-            box-shadow: var(--shadow-sm);
+            background-color: var(--text-main);
+            color: #FFFFFF;
         }
 
         .alpha-btn.disabled {
-            opacity: 0.25;
+            opacity: 0.2;
             cursor: not-allowed;
         }
 
         .alpha-btn.all-btn {
-            font-size: 0.7rem;
-            width: 36px;
-            border-radius: 12px;
-            margin-bottom: 0.5rem;
+            font-size: 0.75rem;
+            width: 42px;
+            border-radius: 8px;
+            margin-bottom: 1rem;
+            border: 1px solid var(--border-color);
+            background-color: var(--card-bg);
         }
 
         /* ================= 移动端适配 ================= */
         @media (max-width: 768px) {
+            .header {
+                padding: 1.5rem 1rem 0.5rem;
+            }
             .controls {
                 flex-direction: column;
                 align-items: stretch;
+                padding: 1rem;
             }
             .action-buttons {
                 justify-content: space-between;
@@ -407,12 +440,15 @@
                 position: static;
                 flex-direction: row;
                 overflow-x: auto;
-                padding: 10px;
-                border-radius: 12px;
-                margin-bottom: 1rem;
+                padding: 0 0 1rem 0;
+                margin-bottom: 0;
             }
             .alpha-btn {
                 flex-shrink: 0;
+            }
+            .alpha-btn.all-btn {
+                margin-bottom: 0;
+                margin-right: 0.5rem;
             }
         }
     </style>
@@ -520,15 +556,15 @@
         const renderList = (dataToRender = vocabulary) => {
             wordListEl.innerHTML = '';
 
-            // 【优化】：空状态 (Empty State) 拦截渲染
+            // 空状态 (Empty State) 拦截渲染
             if (dataToRender.length === 0) {
                 wordListEl.innerHTML = `
                     <div style="grid-column: 1 / -1; text-align: center; padding: 4rem 1rem; color: var(--text-muted);">
-                        <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" style="margin-bottom: 1rem; opacity: 0.5; display: inline-block;">
+                        <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2" style="margin-bottom: 1rem; opacity: 0.6; display: inline-block;">
                             <path stroke-linecap="round" stroke-linejoin="round" d="M12 6.042A8.967 8.967 0 006 3.75c-1.052 0-2.062.18-3 .512v14.25A8.987 8.987 0 016 18c2.305 0 4.408.867 6 2.292m0-14.25a8.966 8.966 0 016-2.292c1.052 0 2.062.18 3 .512v14.25A8.987 8.987 0 0018 18a8.967 8.967 0 00-6 2.292m0-14.25v14.25" />
                         </svg>
-                        <p style="font-size: 1.1rem; font-weight: 500; color: var(--text-main);">未找到匹配的单词</p>
-                        <p style="font-size: 0.9rem; margin-top: 0.5rem;">请尝试更换搜索词，或点击上方按钮添加新单词。</p>
+                        <p style="font-family: var(--font-serif); font-size: 1.25rem; font-weight: 500; color: var(--text-main);">未找到单词</p>
+                        <p style="font-size: 0.95rem; margin-top: 0.5rem;">请更换搜索条件，或添加新的词汇储备。</p>
                     </div>
                 `;
                 return;
@@ -548,9 +584,9 @@
                             <span class="word-card-word">${escapeHTML(item.word)}</span>
                             <span class="word-card-phonetic">${escapeHTML(item.phonetic)}</span>
                         </div>
-                        <div style="display:flex; gap:0.5rem;">
-                            <button class="btn-edit" style="background:none; border:none; color:var(--primary-color); cursor:pointer; font-size: 0.9rem;">编辑</button>
-                            <button class="btn-delete" style="background:none; border:none; color:#c84b31; cursor:pointer; font-size: 0.9rem;">删除</button>
+                        <div class="card-actions" style="display:flex; gap:1rem;">
+                            <button class="btn-edit" style="background:none; border:none; color:var(--text-muted); cursor:pointer; font-size: 0.75rem; transition:color 0.2s;">编辑</button>
+                            <button class="btn-delete" style="background:none; border:none; color:var(--primary-color); cursor:pointer; font-size: 0.75rem; transition:color 0.2s;">删除</button>
                         </div>
                     </div>
                 `;
@@ -561,8 +597,16 @@
 
                 card.innerHTML = cardHTML;
 
-                card.querySelector('.btn-edit').addEventListener('click', () => editWord(item.id));
-                card.querySelector('.btn-delete').addEventListener('click', () => deleteWord(item.id));
+                // 悬停交互增强
+                const editBtn = card.querySelector('.btn-edit');
+                const delBtn = card.querySelector('.btn-delete');
+                editBtn.addEventListener('mouseenter', () => editBtn.style.color = 'var(--text-main)');
+                editBtn.addEventListener('mouseleave', () => editBtn.style.color = 'var(--text-muted)');
+                delBtn.addEventListener('mouseenter', () => delBtn.style.color = 'var(--primary-hover)');
+                delBtn.addEventListener('mouseleave', () => delBtn.style.color = 'var(--primary-color)');
+
+                editBtn.addEventListener('click', () => editWord(item.id));
+                delBtn.addEventListener('click', () => deleteWord(item.id));
 
                 wordListEl.appendChild(card);
             });
