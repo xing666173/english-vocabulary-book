@@ -279,13 +279,16 @@
             top: 0;
             left: 0;
             width: 100%;
-            height: 100%;
+            min-height: 100%;
+            height: 100dvh;
             background-color: rgba(26, 25, 25, 0.4); 
             backdrop-filter: blur(4px);
             display: none;
             justify-content: center;
-            align-items: center;
+            align-items: flex-start;
             z-index: 100;
+            padding: max(1rem, env(safe-area-inset-top)) 1rem max(1rem, env(safe-area-inset-bottom));
+            overflow-y: auto;
         }
 
         .modal-overlay.active {
@@ -296,10 +299,14 @@
             background-color: var(--bg-color); 
             width: 90%;
             max-width: 480px;
+            max-height: calc(100dvh - 2rem);
             border-radius: var(--border-radius);
             box-shadow: var(--shadow-lg);
             border: 1px solid var(--border-color);
             animation: modalFadeIn 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
         }
 
         @keyframes modalFadeIn {
@@ -310,6 +317,7 @@
         .modal-header {
             padding: 2rem 2rem 1rem;
             text-align: center;
+            flex: 0 0 auto;
         }
 
         .modal-header h2 {
@@ -321,6 +329,10 @@
 
         .modal-body {
             padding: 0 2rem 1.5rem;
+            flex: 1 1 auto;
+            min-height: 0;
+            overflow-y: auto;
+            overscroll-behavior: contain;
         }
 
         .form-group {
@@ -365,6 +377,9 @@
             display: flex;
             justify-content: stretch;
             gap: 1rem;
+            flex: 0 0 auto;
+            background-color: var(--bg-color);
+            border-top: 1px solid rgba(226, 223, 216, 0.75);
         }
         
         .modal-footer button {
@@ -387,12 +402,40 @@
             width: 54px;
             position: sticky;
             top: 40px;
+            max-height: calc(100dvh - 80px);
             background-color: transparent;
-            padding: 0;
+            padding: 0.25rem 0;
             display: flex;
             flex-direction: column;
             align-items: center;
             gap: 2px;
+            overflow-y: auto;
+            overscroll-behavior: contain;
+            scrollbar-width: thin;
+            scrollbar-color: transparent transparent;
+            scroll-behavior: smooth;
+            transition: scrollbar-color var(--transition-speed) ease;
+        }
+
+        .alphabet-sidebar:hover {
+            scrollbar-color: var(--border-color) transparent;
+        }
+
+        .alphabet-sidebar::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        .alphabet-sidebar::-webkit-scrollbar-track {
+            background: transparent;
+        }
+
+        .alphabet-sidebar::-webkit-scrollbar-thumb {
+            background: transparent;
+            border-radius: 999px;
+        }
+
+        .alphabet-sidebar:hover::-webkit-scrollbar-thumb {
+            background: var(--border-color);
         }
 
         .alpha-btn {
@@ -460,8 +503,11 @@
             .alphabet-sidebar {
                 width: 100%;
                 position: static;
+                max-height: none;
                 flex-direction: row;
                 overflow-x: auto;
+                overflow-y: hidden;
+                overscroll-behavior-x: contain;
                 padding: 0 0 1rem 0;
                 margin-bottom: 0;
             }
@@ -471,6 +517,28 @@
             .alpha-btn.all-btn {
                 margin-bottom: 0;
                 margin-right: 0.5rem;
+            }
+            .modal-overlay {
+                padding: 0.75rem;
+            }
+            .modal-content {
+                width: 100%;
+                max-height: calc(100dvh - 1.5rem);
+            }
+            .modal-header {
+                padding: 1.25rem 1.25rem 0.75rem;
+            }
+            .modal-body {
+                padding: 0 1.25rem 1rem;
+            }
+            .modal-footer {
+                padding: 0.85rem 1.25rem 1.25rem;
+            }
+            .form-group {
+                margin-bottom: 1rem;
+            }
+            .form-group textarea {
+                min-height: 80px;
             }
             body::before {
                 font-size: 80vw; /* 移动端放大底纹字号 */
@@ -558,10 +626,12 @@
         const btnExportData = document.getElementById('btnExportData');
         const importFile = document.getElementById('importFile');
         const alphabetListEl = document.getElementById('alphabetList');
+        const alphabetSidebarEl = document.querySelector('.alphabet-sidebar');
 
         // ================= 2. 状态管理 =================
         let vocabulary = JSON.parse(localStorage.getItem('my_vocabulary')) || [];
         let currentLetterFilter = 'All';
+        let isAlphabetHovered = false;
 
         // ================= 3. 基础工具函数 =================
         const escapeHTML = (str) => {
@@ -574,6 +644,19 @@
         const saveToLocal = () => {
             localStorage.setItem('my_vocabulary', JSON.stringify(vocabulary));
             renderAlphabetIndex(); 
+        };
+
+        const isDesktopAlphabet = () => window.matchMedia('(min-width: 769px)').matches;
+
+        const syncAlphabetScroll = () => {
+            if (!alphabetSidebarEl || isAlphabetHovered || !isDesktopAlphabet()) return;
+
+            const pageScrollable = document.documentElement.scrollHeight - window.innerHeight;
+            const sidebarScrollable = alphabetSidebarEl.scrollHeight - alphabetSidebarEl.clientHeight;
+            if (pageScrollable <= 0 || sidebarScrollable <= 0) return;
+
+            const progress = Math.min(Math.max(window.scrollY / pageScrollable, 0), 1);
+            alphabetSidebarEl.scrollTop = sidebarScrollable * progress;
         };
 
         // ================= 4. 视图渲染逻辑 =================
@@ -638,6 +721,7 @@
         };
 
         const renderAlphabetIndex = () => {
+            const previousSidebarScrollTop = alphabetSidebarEl ? alphabetSidebarEl.scrollTop : 0;
             alphabetListEl.innerHTML = '';
             
             const existingLetters = new Set(vocabulary.map(v => v.word.charAt(0).toUpperCase()));
@@ -669,6 +753,12 @@
                     });
                 }
                 alphabetListEl.appendChild(btn);
+            }
+
+            if (alphabetSidebarEl && isAlphabetHovered) {
+                alphabetSidebarEl.scrollTop = previousSidebarScrollTop;
+            } else {
+                syncAlphabetScroll();
             }
         };
 
@@ -839,8 +929,37 @@
         });
 
         // 初始化渲染
+        if (alphabetSidebarEl) {
+            alphabetSidebarEl.addEventListener('mouseenter', () => {
+                isAlphabetHovered = true;
+            });
+
+            alphabetSidebarEl.addEventListener('mouseleave', () => {
+                isAlphabetHovered = false;
+                syncAlphabetScroll();
+            });
+
+            alphabetSidebarEl.addEventListener('wheel', (event) => {
+                if (!isDesktopAlphabet()) return;
+
+                const sidebarScrollable = alphabetSidebarEl.scrollHeight - alphabetSidebarEl.clientHeight;
+                if (sidebarScrollable <= 0) return;
+
+                event.preventDefault();
+                event.stopPropagation();
+                alphabetSidebarEl.scrollTop = Math.min(
+                    Math.max(alphabetSidebarEl.scrollTop + event.deltaY, 0),
+                    sidebarScrollable
+                );
+            }, { passive: false });
+        }
+
+        window.addEventListener('scroll', syncAlphabetScroll, { passive: true });
+        window.addEventListener('resize', syncAlphabetScroll);
+
         renderAlphabetIndex();
         handleSearch();
+        syncAlphabetScroll();
     });
     </script>
 </body>
